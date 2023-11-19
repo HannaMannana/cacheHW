@@ -41,7 +41,7 @@ public class Main {
 
         java.sql.Connection connection = dataSource.getConnection();
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-        try (Liquibase liquibase = new liquibase.Liquibase("db/changeLog/db.changelog.yml", new ClassLoaderResourceAccessor(), database)) {
+        try (Liquibase liquibase = new liquibase.Liquibase("changeLog/db.changelog.yml", new ClassLoaderResourceAccessor(), database)) {
             properties.forEach((key, value) -> liquibase.setChangeLogParameter(Objects.toString(key), value));
             liquibase.update(new Contexts(), new LabelExpression());
         } catch (LiquibaseException e) {
