@@ -1,0 +1,5 @@
+liquibase:
+  change-log: db.changeLog/db.changelog.yml
+  enabled: true
+  password: root
+
