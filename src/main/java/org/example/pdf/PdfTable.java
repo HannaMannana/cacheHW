@@ -17,6 +17,9 @@ import java.util.List;
 public class PdfTable {
 
 
+    /**
+     * Создает PDF файл с таблицей
+     */
     public static void createTable() {
         float[] pointColumnWidths = {50F, 150F, 150F, 250F, 200F};
 
@@ -26,7 +29,7 @@ public class PdfTable {
             FileOutputStream outputStream = new FileOutputStream(file);
             PdfWriter writer = PdfWriter.getInstance(document, outputStream);
             document.open();
-            onEndPage(writer, document);
+            background(writer, document);
             addTable(document, pointColumnWidths);
             document.close();
             document.close();
@@ -37,6 +40,12 @@ public class PdfTable {
 
     }
 
+    /**
+     * Создает таблицу
+     *
+     * @param document файл в который добавляем таблицу
+     * @param size     размер колонок
+     */
     private static void addTable(Document document, float[] size) throws Exception {
         UserDao userDao = UserDaoImpl.getInstance();
         List<User> users = userDao.findAll();
@@ -60,6 +69,12 @@ public class PdfTable {
     }
 
 
+    /**
+     * Задает параметры для колонок
+     *
+     * @param table  таблица
+     * @param string название колонки
+     */
     private static void addTableFields(PdfPTable table, String string) {
         Font font = new Font(Font.FontFamily.TIMES_ROMAN, 12,
                 Font.NORMAL);
@@ -70,6 +85,12 @@ public class PdfTable {
     }
 
 
+    /**
+     * Задает параметры для заголовка
+     *
+     * @param table  таблица
+     * @param string название заголовка
+     */
     private static void addTitle(PdfPTable table, String string) {
         Font font = new Font(Font.FontFamily.TIMES_ROMAN, 20,
                 Font.BOLD);
@@ -80,8 +101,13 @@ public class PdfTable {
         table.addCell(cell);
     }
 
-
-    private static void onEndPage(PdfWriter writer, Document document) throws DocumentException, IOException {
+    /**
+     * Задает фон
+     *
+     * @param writer   добавляет jpg
+     * @param document название заголовка
+     */
+    private static void background(PdfWriter writer, Document document) throws DocumentException, IOException {
         Image background = Image.getInstance("src/main/resources/images/Clever.jpg");
         float width = document.getPageSize().getWidth();
         float height = document.getPageSize().getHeight();
