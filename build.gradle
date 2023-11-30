@@ -34,6 +34,8 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql:42.5.4'
     implementation group: 'com.itextpdf', name: 'itextpdf', version: '5.5.13.3'
     implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.23.0'
+    implementation group: 'com.itextpdf', name: 'itextpdf', version: '5.5.13.3'
+
 
 }
 
