@@ -2,16 +2,26 @@ package org.example.proxy;
 
 import lombok.RequiredArgsConstructor;
 import org.example.cache.Cache;
+import org.example.config.DataSource;
 import org.example.dao.UserDao;
+import org.example.dao.UserDaoImpl;
 import org.example.entity.User;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public class CachingUserDaoProxy implements UserDao {
 
-    private final UserDao userDao;
+    private final UserDao userDao = UserDaoImpl.getInstance();
     private final Cache<User> cache = new Factory<User>().createCache();
+    private static CachingUserDaoProxy instance;
+
+    public static CachingUserDaoProxy getInstance() {
+        if (instance == null) {
+            instance = new CachingUserDaoProxy();
+        }
+        return instance;
+    }
+
 
     /**
      * Ищет в кэш пользователя по идентификатору

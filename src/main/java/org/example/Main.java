@@ -6,15 +6,16 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
-import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import org.example.config.Liquibase;
 import org.example.dao.UserDao;
 import org.example.dao.UserDaoImpl;
+import org.example.pdf.PdfTable;
 import org.example.proxy.CachingUserDaoProxy;
 import org.example.service.UserService;
 import org.example.service.UserServiceImpl;
@@ -34,26 +35,9 @@ import static org.example.validation.Valid.valid;
 public class Main {
     public static void main(String[] args) throws JsonProcessingException, SQLException, DatabaseException {
 
-        HikariConfig config = new HikariConfig("/datasource.yml");
-        HikariDataSource dataSource = new HikariDataSource(config);
+        Liquibase.init();
+        UserService userService = UserServiceImpl.getInstance();
 
-        Properties properties = new Properties();
-
-        java.sql.Connection connection = dataSource.getConnection();
-        Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-        try (Liquibase liquibase = new liquibase.Liquibase("changeLog/db.changelog.yml", new ClassLoaderResourceAccessor(), database)) {
-            properties.forEach((key, value) -> liquibase.setChangeLogParameter(Objects.toString(key), value));
-            liquibase.update(new Contexts(), new LabelExpression());
-        } catch (LiquibaseException e) {
-            throw new RuntimeException(e);
-        }
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        UserDao userDao = new UserDaoImpl(jdbcTemplate, namedParameterJdbcTemplate);
-        Mapper mapper = new MapperImpl();
-        UserDao cacheUserDao = new CachingUserDaoProxy(userDao);
-        UserService userService = new UserServiceImpl(cacheUserDao, mapper);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -61,9 +45,6 @@ public class Main {
         String userForUpdate = "{\"name\": \"Pitter\",\"lastName\":\"Pirker\",\"email\": \"Parker@gmail.com\",\"password\":\"89n1mnOWEa\"}";
 
         System.out.println(userService.findById(48L));
-
-
-        System.out.println(userService.findById(1L));
 
 
         UserDto userDtoToSave = objectMapper.readValue(userToSave, UserDto.class);
@@ -77,10 +58,13 @@ public class Main {
         userDtoForUpdate.setId(id);
         UserDto updatedUser = userService.update(valid(userDtoForUpdate));
         System.out.println(updatedUser);
+
         boolean isUserDeleted = userService.delete(id);
         System.out.println(isUserDeleted);
 
 
         System.out.println(userService.getAll());
+
+        PdfTable.createTable();
     }
 }

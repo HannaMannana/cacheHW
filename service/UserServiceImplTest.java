@@ -1,10 +1,18 @@
+package org.example.service;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.service.UserService;
-import org.example.service.UserServiceImpl;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.example.dao.UserDao;
+import org.example.dao.UserDaoImpl;
 import org.example.service.dto.UserDto;
+import org.example.service.mapper.Mapper;
+import org.example.service.mapper.MapperImpl;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.Comparator;
 import java.util.List;
@@ -13,17 +21,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class UserServiceImplTest {
-    UserService userService = UserServiceImpl.getInstance();
+    HikariConfig config = new HikariConfig("/datasource.yml");
+    HikariDataSource dataSource = new HikariDataSource(config);
+    JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+    NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+    UserDao userDao = new UserDaoImpl(jdbcTemplate, namedParameterJdbcTemplate);
+    Mapper mapper = new MapperImpl();
+    UserService userService = new UserServiceImpl(userDao, mapper);
+
 
     @Test
     void findByIdShouldReturnUser() throws JsonProcessingException {
         // given
-        String user = "{\"id\":46,\"name\": \"Harry\",\"lastName\":\"Potter\",\"email\": \"Potter@gmail.com\",\"password\":\"141486QWE1\"}";
+        String user = "{\"id\":1,\"name\": \"Vik\",\"lastName\":\"MikkiY\",\"email\": \"Mikki@gmail.com\",\"password\":\"12400aPWE1\"}";
         ObjectMapper objectMapper = new ObjectMapper();
         UserDto expected = objectMapper.readValue(user, UserDto.class);
 
         // when
-        UserDto actual = userService.findById(46L);
+        UserDto actual = userService.findById(1L);
 
         // then
         assertEquals(expected, actual);
@@ -33,7 +48,7 @@ class UserServiceImplTest {
     @Test
     void createShouldReturnUser() throws JsonProcessingException {
         // given
-        String user = "{\"name\": \"Ann\",\"lastName\":\"Kiki\",\"email\": \"Kiki@gmail.com\",\"password\":\"121qo147Q1\"}";
+        String user = "{\"name\": \"Jon\",\"lastName\":\"Doe\",\"email\": \"Doe@gmail.com\",\"password\":\"121qoaPWE1\"}";
         ObjectMapper objectMapper = new ObjectMapper();
         UserDto expected = objectMapper.readValue(user, UserDto.class);
 
@@ -50,7 +65,7 @@ class UserServiceImplTest {
         // given
         Long id = userService.getAll().stream().max(Comparator.comparing(UserDto::getId)).get().getId();
 
-        String user = "{\"id\":" + id + ",\"name\": \"Hanna\",\"lastName\":\"Kesha\",\"email\": \"Kiki@gmail.com\",\"password\":\"121qo147Q1\"}";
+        String user = "{\"id\":" + id + ",\"name\": \"John\",\"lastName\":\"Dolby\",\"email\": \"Dolby@gmail.com\",\"password\":\"12400aPWE1\"}";
         ObjectMapper objectMapper = new ObjectMapper();
         UserDto expected = objectMapper.readValue(user, UserDto.class);
 

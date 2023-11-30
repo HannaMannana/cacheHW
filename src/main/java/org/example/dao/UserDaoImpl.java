@@ -1,6 +1,7 @@
 package org.example.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.example.config.DataSource;
 import org.example.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -15,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class UserDaoImpl implements UserDao {
 
     public static final String FIND_BY_ID = "SELECT  u.id, u.name_user, u.last_name, u.email, u.password " +
@@ -29,10 +29,19 @@ public class UserDaoImpl implements UserDao {
     public static final String DELETE = "DELETE FROM users WHERE id = ?";
 
 
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSource.getInstance());
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(DataSource.getInstance());
 
+    private static UserDao instance;
+
+    public static UserDao getInstance() {
+        if (instance == null) {
+            instance = new UserDaoImpl() {
+            };
+        }
+        return instance;
+    }
 
     private User mapRow(ResultSet resultSet, int number) throws SQLException {
         User user = new User();

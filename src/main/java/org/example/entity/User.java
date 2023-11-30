@@ -8,23 +8,23 @@ public class User {
     /**
      * Идентификатор продукта (генерируется базой)
      */
-    private Long id;
+    public Long id;
     /**
      * Имя пользователя (не может быть null или пустым)
      */
-    private String name;
+    public String name;
     /**
      * Фамилия пользователя (не может быть null или пустым)
      */
-    private String lastName;
+    public String lastName;
     /**
      * Электронная почта пользователя (не может быть null или пустым, обязательно должна содержать "@")
      */
-    private String email;
+    public String email;
     /**
      * Пароль пользователя (не может быть null или пустым, макс. -  10 символов(анг. и без пробелов))
      */
-    private String password;
+    public String password;
 
 
 }

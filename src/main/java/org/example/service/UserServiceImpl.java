@@ -1,19 +1,27 @@
 package org.example.service;
 
-import lombok.RequiredArgsConstructor;
 import org.example.dao.UserDao;
 import org.example.entity.User;
+import org.example.proxy.CachingUserDaoProxy;
 import org.example.service.dto.UserDto;
 import org.example.service.mapper.Mapper;
+import org.example.service.mapper.MapperImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserDao userDao;
-    private final Mapper mapper;
+    private final UserDao userDao = CachingUserDaoProxy.getInstance();
+    private final Mapper mapper = MapperImpl.getInstance();
+    private static UserServiceImpl instance;
+
+    public static UserServiceImpl getInstance() {
+        if (instance == null) {
+            instance = new UserServiceImpl();
+        }
+        return instance;
+    }
 
     /**
      * Ищет пользователя по идентификатору

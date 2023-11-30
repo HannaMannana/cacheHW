@@ -1,9 +1,21 @@
 package org.example.service.mapper;
 
+import org.example.dao.UserDao;
+import org.example.dao.UserDaoImpl;
 import org.example.entity.User;
 import org.example.service.dto.UserDto;
 
 public class MapperImpl implements Mapper{
+
+    private static Mapper instance;
+
+    public static Mapper getInstance() {
+        if (instance == null) {
+            instance = new MapperImpl() {
+            };
+        }
+        return instance;
+    }
 
     /**
      * Маппит текущего пользователя в DTO
