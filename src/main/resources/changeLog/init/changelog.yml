@@ -1,0 +1,49 @@
+#databaseChangeLog:
+#  - changeSet:
+#      id: DEV-1
+#      author: mikhaliova
+#      changes:
+#        - createTable:
+#            tableName: users
+#            remarks: Пользователи
+#            columns:
+#              - column:
+#                  name: id
+#                  type: bigserial
+#                  autoIncrement: true
+#                  constraints:
+#                    primaryKey: true
+#                    nullable: false
+#              - column:
+#                  name: name_user
+#                  type: varchar(120)
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: last_name
+#                  type: varchar(120)
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: email
+#                  type: varchar(160)
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: password
+#                  type: varchar(250)
+#                  constraints:
+#                    nullable: false
+
+databaseChangeLog:
+  - changeSet:
+      id: init
+      author: Mikhaliova
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            encoding: utf8
+            path: init.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
