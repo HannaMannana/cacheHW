@@ -1,6 +1,8 @@
 package org.example.pdf;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.example.entity.User;
 import org.example.repository.UserDao;
@@ -10,9 +12,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 
 public class PdfUserInfo {
 
@@ -47,14 +46,6 @@ public class PdfUserInfo {
         } catch (Exception exception) {
             System.out.println("Error in " + PdfUserInfo.class.getName() + "\n" + exception);
         }
-    }
-
-    private static Font setsFont() {
-
-        URL fontURL = PdfUserInfo.class.getResource("/images/Cl.pdf");
-        String font = URLDecoder.decode(fontURL.getPath(), StandardCharsets.UTF_8);
-
-        return FontFactory.getFont(font);
     }
 
 
