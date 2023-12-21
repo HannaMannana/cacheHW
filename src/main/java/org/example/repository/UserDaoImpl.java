@@ -1,6 +1,5 @@
-package org.example.dao;
+package org.example.repository;
 
-import lombok.RequiredArgsConstructor;
 import org.example.config.DataSource;
 import org.example.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,6 +14,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class UserDaoImpl implements UserDao {
 
@@ -69,9 +69,12 @@ public class UserDaoImpl implements UserDao {
      * @return возвращает пользователя найденого в БД
      */
     @Override
-    public User findById(Long id) {
-
-        return jdbcTemplate.queryForObject(FIND_BY_ID, this::mapRow, id);
+    public Optional<User> findById(Long id) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID, this::mapRow, id));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -93,11 +96,11 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User create(User user) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
+        int id = jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(SAVE, Statement.RETURN_GENERATED_KEYS);
             return getPreparedStatement(user, statement);
         }, keyHolder);
-        return user;
+        return findById((long) id).orElseThrow();
     }
 
     /**
@@ -120,7 +123,7 @@ public class UserDaoImpl implements UserDao {
         if (update == 0) {
             throw new RuntimeException("Could not update book" + user);
         }
-        return findById(user.getId());
+        return findById(user.getId()).orElseThrow();
     }
 
     /**

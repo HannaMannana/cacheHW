@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.exeption.BadRequestException;
 import org.example.service.UserService;
 import org.example.service.UserServiceImpl;
 import org.example.service.dto.UserDto;
@@ -16,7 +17,7 @@ class UserServiceImplTest {
     UserService userService = UserServiceImpl.getInstance();
 
     @Test
-    void findByIdShouldReturnUser() throws JsonProcessingException {
+    void findByIdShouldReturnUser() throws JsonProcessingException, BadRequestException {
         // given
         String user = "{\"id\":46,\"name\": \"Harry\",\"lastName\":\"Potter\",\"email\": \"Potter@gmail.com\",\"password\":\"141486QWE1\"}";
         ObjectMapper objectMapper = new ObjectMapper();
