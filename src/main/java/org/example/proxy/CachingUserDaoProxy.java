@@ -1,13 +1,12 @@
 package org.example.proxy;
 
-import lombok.RequiredArgsConstructor;
 import org.example.cache.Cache;
-import org.example.config.DataSource;
-import org.example.dao.UserDao;
-import org.example.dao.UserDaoImpl;
+import org.example.repository.UserDao;
+import org.example.repository.UserDaoImpl;
 import org.example.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CachingUserDaoProxy implements UserDao {
 
@@ -30,14 +29,21 @@ public class CachingUserDaoProxy implements UserDao {
      * @return возвращает пользователя найденого в кэш
      */
     @Override
-    public User findById(Long id) {
+    public Optional<User> findById(Long id) {
         User user = cache.get(id);
         if (user != null) {
-            return user;
+            return Optional.of(user);
         }
-        user = userDao.findById(id);
-        cache.put(user.getId(), user);
-        return cache.get(id);
+
+        Optional<User> optionalUser = userDao.findById(id);
+
+        if (optionalUser.isPresent()) {
+            User foundedUser = optionalUser.get();
+            cache.put(foundedUser.getId(), foundedUser);
+            return Optional.ofNullable(cache.get(id));
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**

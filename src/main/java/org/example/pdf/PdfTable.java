@@ -4,9 +4,9 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import org.example.dao.UserDao;
-import org.example.dao.UserDaoImpl;
 import org.example.entity.User;
+import org.example.repository.UserDao;
+import org.example.repository.UserDaoImpl;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,7 +31,6 @@ public class PdfTable {
             document.open();
             background(writer, document);
             addTable(document, pointColumnWidths);
-            document.close();
             document.close();
             System.out.println("Pdf created successfully.");
         } catch (Exception e) {
@@ -107,13 +106,14 @@ public class PdfTable {
      * @param writer   добавляет jpg
      * @param document название заголовка
      */
-    private static void background(PdfWriter writer, Document document) throws DocumentException, IOException {
-        Image background = Image.getInstance("src/main/resources/images/Clever.jpg");
+    public static void background(PdfWriter writer, Document document) throws DocumentException, IOException {
+        Image background = Image.getInstance("/images/Clever.jpg");
         float width = document.getPageSize().getWidth();
         float height = document.getPageSize().getHeight();
         writer.getDirectContentUnder()
                 .addImage(background, width, 0, 0, height, 0, 0);
     }
+
 
 
 }

@@ -1,7 +1,5 @@
 package org.example.service.mapper;
 
-import org.example.dao.UserDao;
-import org.example.dao.UserDaoImpl;
 import org.example.entity.User;
 import org.example.service.dto.UserDto;
 
