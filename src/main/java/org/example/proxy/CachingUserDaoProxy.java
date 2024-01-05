@@ -1,26 +1,20 @@
 package org.example.proxy;
 
 import org.example.cache.Cache;
-import org.example.repository.UserDao;
-import org.example.repository.UserDaoImpl;
 import org.example.entity.User;
+import org.example.repository.UserDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class CachingUserDaoProxy implements UserDao {
 
-    private final UserDao userDao = UserDaoImpl.getInstance();
+    @Autowired
+    private UserDao userDao;
     private final Cache<User> cache = new Factory<User>().createCache();
-    private static CachingUserDaoProxy instance;
-
-    public static CachingUserDaoProxy getInstance() {
-        if (instance == null) {
-            instance = new CachingUserDaoProxy();
-        }
-        return instance;
-    }
-
 
     /**
      * Ищет в кэш пользователя по идентификатору

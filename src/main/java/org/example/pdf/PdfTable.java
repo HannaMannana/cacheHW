@@ -4,9 +4,10 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import lombok.RequiredArgsConstructor;
 import org.example.entity.User;
 import org.example.repository.UserDao;
-import org.example.repository.UserDaoImpl;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,13 +15,18 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
+
+@Component
+@RequiredArgsConstructor
 public class PdfTable {
+
+    private final UserDao userDao;
 
 
     /**
      * Создает PDF файл с таблицей
      */
-    public static void createTable() {
+    public void createTable() {
         float[] pointColumnWidths = {50F, 150F, 150F, 250F, 200F};
 
         try {
@@ -30,7 +36,7 @@ public class PdfTable {
             PdfWriter writer = PdfWriter.getInstance(document, outputStream);
             document.open();
             background(writer, document);
-            addTable(document, pointColumnWidths);
+            this.addTable(document, pointColumnWidths);
             document.close();
             System.out.println("Pdf created successfully.");
         } catch (Exception e) {
@@ -45,8 +51,7 @@ public class PdfTable {
      * @param document файл в который добавляем таблицу
      * @param size     размер колонок
      */
-    private static void addTable(Document document, float[] size) throws Exception {
-        UserDao userDao = UserDaoImpl.getInstance();
+    private void addTable(Document document, float[] size) throws Exception {
         List<User> users = userDao.findAll();
         Field[] fields = User.class.getFields();
         PdfPTable table = new PdfPTable(size);

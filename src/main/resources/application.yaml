@@ -1,0 +1,14 @@
+driverClassName: org.postgresql.Driver
+jdbcUrl: jdbc:postgresql://127.0.0.1:5432/users
+username: postgres
+password: root
+
+capacity: "10"
+size: "10"
+type: "LRU"
+
+liquibase:
+  change-log: db.changeLog/db.changelog.yml
+  enabled: true
+  password: root
+

@@ -1,11 +1,12 @@
 package org.example.repository;
 
-import org.example.config.DataSource;
+import lombok.RequiredArgsConstructor;
 import org.example.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Repository
+@RequiredArgsConstructor
 public class UserDaoImpl implements UserDao {
 
     public static final String FIND_BY_ID = "SELECT  u.id, u.name_user, u.last_name, u.email, u.password " +
@@ -29,19 +32,9 @@ public class UserDaoImpl implements UserDao {
     public static final String DELETE = "DELETE FROM users WHERE id = ?";
 
 
-    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSource.getInstance());
+    private final JdbcTemplate jdbcTemplate;
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(DataSource.getInstance());
-
-    private static UserDao instance;
-
-    public static UserDao getInstance() {
-        if (instance == null) {
-            instance = new UserDaoImpl() {
-            };
-        }
-        return instance;
-    }
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private User mapRow(ResultSet resultSet, int number) throws SQLException {
         User user = new User();

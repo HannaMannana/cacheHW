@@ -2,9 +2,12 @@ package org.example.controller;
 
 import org.example.exeption.BadRequestException;
 import org.example.service.UserService;
-import org.example.service.UserServiceImpl;
 import org.example.service.dto.UserDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,11 +16,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-
-@WebServlet(value = "/users/*", name = "UserController")
+@WebServlet(name = "users", value = "/users")
 public class UserController extends HttpServlet {
 
-    private final UserService userService = new UserServiceImpl();
+    @Autowired
+    private UserService userService;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(
+                this, config.getServletContext());
+    }
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -70,7 +81,6 @@ public class UserController extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        // добавить айди?
         try {
             UserDto user = ServletUtil.expect(UserDto.class, req);
             ServletUtil.respond(userService.update(user), resp);

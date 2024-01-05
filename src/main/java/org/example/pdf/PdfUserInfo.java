@@ -4,20 +4,24 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
+import lombok.RequiredArgsConstructor;
 import org.example.entity.User;
 import org.example.repository.UserDao;
-import org.example.repository.UserDaoImpl;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 
+@Component
+@RequiredArgsConstructor
 public class PdfUserInfo {
 
-    public static void makePdf(HttpServletRequest request, HttpServletResponse response, Long id) {
+    private final UserDao userDao;
+
+    public void makePdf(HttpServletRequest request, HttpServletResponse response, Long id) {
         try {
-            UserDao userDao = new UserDaoImpl();
             Document document = new Document(PageSize.A4, 10, 0, 350, 0);
 
             User user = userDao.findById(id).orElseThrow();

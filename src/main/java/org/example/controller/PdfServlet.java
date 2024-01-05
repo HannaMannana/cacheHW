@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.example.pdf.PdfUserInfo;
 
 import javax.servlet.annotation.WebServlet;
@@ -9,8 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
 
+@RequiredArgsConstructor
 @WebServlet(value = "/pdf/*", name = "PdfServlet")
 public class PdfServlet extends HttpServlet {
+
+    private final PdfUserInfo pdfUserInfo;
 
 
     @Override
@@ -22,7 +26,7 @@ public class PdfServlet extends HttpServlet {
             if (!Objects.isNull(pathInfo) && !pathInfo.replace("/", "").isBlank()) {
 
                 String id = request.getPathInfo().replace("/", "");
-                PdfUserInfo.makePdf(request, response, Long.valueOf(id));
+                pdfUserInfo.makePdf(request, response, Long.valueOf(id));
             }
 
         } catch (NumberFormatException numberFormatException) {

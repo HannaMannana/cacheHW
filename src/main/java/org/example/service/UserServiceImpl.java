@@ -1,30 +1,27 @@
 package org.example.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.entity.User;
 import org.example.exeption.BadRequestException;
-import org.example.proxy.CachingUserDaoProxy;
 import org.example.repository.UserDao;
 import org.example.service.dto.UserDto;
 import org.example.service.mapper.Mapper;
-import org.example.service.mapper.MapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class  UserServiceImpl implements UserService {
+@Service
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
 
-    private final UserDao userDao = CachingUserDaoProxy.getInstance();
-    private final Mapper mapper = MapperImpl.getInstance();
-    private static UserServiceImpl instance;
-
-    public static UserServiceImpl getInstance() {
-        if (instance == null) {
-            instance = new UserServiceImpl();
-        }
-        return instance;
-    }
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private Mapper mapper;
 
     /**
      * Ищет пользователя по идентификатору
