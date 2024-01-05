@@ -1,27 +1,27 @@
 package org.example.service;
 
-import org.example.dao.UserDao;
+import lombok.RequiredArgsConstructor;
 import org.example.entity.User;
-import org.example.proxy.CachingUserDaoProxy;
+import org.example.exeption.BadRequestException;
+import org.example.repository.UserDao;
 import org.example.service.dto.UserDto;
 import org.example.service.mapper.Mapper;
-import org.example.service.mapper.MapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserDao userDao = CachingUserDaoProxy.getInstance();
-    private final Mapper mapper = MapperImpl.getInstance();
-    private static UserServiceImpl instance;
-
-    public static UserServiceImpl getInstance() {
-        if (instance == null) {
-            instance = new UserServiceImpl();
-        }
-        return instance;
-    }
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private Mapper mapper;
 
     /**
      * Ищет пользователя по идентификатору
@@ -30,9 +30,10 @@ public class UserServiceImpl implements UserService {
      * @return маппит найденного пользователя DTO в текущего пользователя
      */
     @Override
-    public UserDto findById(Long id) {
-        User user = userDao.findById(id);
-        return mapper.toDto(user);
+    public UserDto findById(Long id) throws BadRequestException {
+        Optional<User> user = userDao.findById(id);
+
+        return mapper.toDto(user.orElseThrow(() -> new BadRequestException("USEER NOT FOUND")));
     }
 
     /**
@@ -42,6 +43,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserDto> getAll() {
+
         List<User> users = userDao.findAll();
 
         List<UserDto> dtos = new ArrayList<>();
@@ -50,6 +52,7 @@ public class UserServiceImpl implements UserService {
             dtos.add(dto);
         }
         return dtos;
+
     }
 
     /**
@@ -90,6 +93,21 @@ public class UserServiceImpl implements UserService {
         } else {
             return true;
         }
+    }
+
+
+    public static <T> List<T> getPage(List<T> sourceList, int page, int pageSize) {
+
+        if(pageSize <= 0 || page <= 0) {
+            throw new IllegalArgumentException("invalid page size: " + pageSize);
+        }
+
+        int fromIndex = (page - 1) * pageSize;
+        if(sourceList == null || sourceList.size() < fromIndex){
+            return Collections.emptyList();
+        }
+
+        return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
     }
 
 }

@@ -1,12 +1,12 @@
-package org.example.dao;
+package org.example.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.example.config.DataSource;
 import org.example.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,7 +15,10 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+@Repository
+@RequiredArgsConstructor
 public class UserDaoImpl implements UserDao {
 
     public static final String FIND_BY_ID = "SELECT  u.id, u.name_user, u.last_name, u.email, u.password " +
@@ -29,19 +32,9 @@ public class UserDaoImpl implements UserDao {
     public static final String DELETE = "DELETE FROM users WHERE id = ?";
 
 
-    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSource.getInstance());
+    private final JdbcTemplate jdbcTemplate;
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(DataSource.getInstance());
-
-    private static UserDao instance;
-
-    public static UserDao getInstance() {
-        if (instance == null) {
-            instance = new UserDaoImpl() {
-            };
-        }
-        return instance;
-    }
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private User mapRow(ResultSet resultSet, int number) throws SQLException {
         User user = new User();
@@ -69,9 +62,12 @@ public class UserDaoImpl implements UserDao {
      * @return возвращает пользователя найденого в БД
      */
     @Override
-    public User findById(Long id) {
-
-        return jdbcTemplate.queryForObject(FIND_BY_ID, this::mapRow, id);
+    public Optional<User> findById(Long id) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID, this::mapRow, id));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -93,11 +89,11 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User create(User user) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
+        int id = jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(SAVE, Statement.RETURN_GENERATED_KEYS);
             return getPreparedStatement(user, statement);
         }, keyHolder);
-        return user;
+        return findById((long) id).orElseThrow();
     }
 
     /**
@@ -120,7 +116,7 @@ public class UserDaoImpl implements UserDao {
         if (update == 0) {
             throw new RuntimeException("Could not update book" + user);
         }
-        return findById(user.getId());
+        return findById(user.getId()).orElseThrow();
     }
 
     /**

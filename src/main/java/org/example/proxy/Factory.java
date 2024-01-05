@@ -14,9 +14,10 @@ public class Factory<T> {
 
 
     private Cache<T> cache;
-    private final LRUCache<T> lruCache = new LRUCache<>(Integer.parseInt(CacheProperties.getProperty(Constants.CAPACITY)));
-    private final LFUCache<T> lfuCache = new LFUCache<>(Integer.parseInt(CacheProperties.getProperty(Constants.CAPACITY)));
-    private static final String VALUE = CacheProperties.getProperty(Constants.TYPE);
+    private final CacheProperties cacheProperties = new CacheProperties();
+    private final LRUCache<T> lruCache = new LRUCache<>(Integer.parseInt(cacheProperties.getProperty(Constants.CAPACITY)));
+    private final LFUCache<T> lfuCache = new LFUCache<>(Integer.parseInt(cacheProperties.getProperty(Constants.CAPACITY)));
+    private final String VALUE = cacheProperties.getProperty(Constants.TYPE);
 
 
     public Cache<T> createCache() {
